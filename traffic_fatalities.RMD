@@ -1,0 +1,50 @@
+---
+title: "2015 American Traffic Fatalities"
+author: "Sam Edwardes"
+date: "12/07/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r environment, warning=FALSE, message=FALSE}
+setwd("~/GitHub/Leaflet_Demo")
+library(leaflet)
+library(dplyr)
+```
+
+Traffic fatality data was obtained from [data.world](https://data.world/transportation/2015-traffic-fatalities). The original source of the data is from [whitehouse.gov](https://obamawhitehouse.archives.gov/blog/2016/08/29/2015-traffic-fatalities-data-has-just-been-released-call-action-download-and-analyze).
+
+From data.world:
+
+> **35,092**. That is the number of people who died on our nation’s highways in motor vehicle traffic crashes in 2015. Your neighbor driving to work. Your niece walking to the park. Your brother biking home. Every day, nearly 100 people die from vehicle related accidents.
+
+> The Department of Transportation has released the raw data for all of the fatalities that have occurred on America's roads. In an attempt to stem the continual increase of these tragic incidents, the government is asking anyone with a passion for data to dig in and see what kinds of conclusions are hidden beneath the surface.
+
+```{r load_data}
+# to load directly from the web
+# df <- read.csv("https://query.data.world/s/cmknwf4nw4d74ya3cynbiisfiuyq5t", header=TRUE, stringsAsFactors=FALSE)
+
+# loading from local machine
+# download.file(url = "https://query.data.world/s/cmknwf4nw4d74ya3cynbiisfiuyq5t", destfile = "fatal.csv")
+df <- read.csv("fatal.csv", header = TRUE, stringsAsFactors=FALSE)
+```
+
+```{r clean_data}
+df_markers <- df
+df_markers$lat <- df_markers$LATITUDE
+df_markers$lng <- df_markers$LONGITUD
+df_markers <- select(df_markers, lat, lng) 
+df_markers <- head(df_markers, 10)
+```
+
+This page creates an interactive map to visualise where accidents are occuring.
+
+```{r create_map, echo=TRUE}
+df_markers %>%
+    leaflet() %>%
+    addTiles() %>%
+    addMarkers(clusterOptions = markerClusterOptions())
+```

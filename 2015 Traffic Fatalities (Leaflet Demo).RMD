@@ -13,26 +13,21 @@ library(tidyverse)
 
 Get the data
 ```{r load_data}
-df <- read.csv("https://query.data.world/s/cmknwf4nw4d74ya3cynbiisfiuyq5t", 
-               header=TRUE, stringsAsFactors=FALSE);
-
-head(df)
+df <- read.csv("https://query.data.world/s/cmknwf4nw4d74ya3cynbiisfiuyq5t", header=TRUE, stringsAsFactors=FALSE)
 ```
 
 Clean data
-```{r}
-df$lat <- df$LATITUDE
-df$lng <- df$LONGITUD
+```{r clean_data}
+df_markers <- df
+df_markers$lat <- df_markers$LATITUDE
+df_markers$lng <- df_markers$LONGITUD
+df_markers <- select(df, lat, lng) 
+df_markers <- head(df_markers, 10)
 ```
 
 
-
-
 My first map
-```{r}
-df_markers <- select(df, lat, lng) 
-df_markers <- head(df_markers, 1000)
-
+```{r create_map}
 df_markers %>%
     leaflet() %>%
     addTiles() %>%
