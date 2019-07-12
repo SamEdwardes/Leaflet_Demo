@@ -1,0 +1,42 @@
+---
+title: "Leaflet Demo"
+author: "Sam Edwardes"
+date: "11/07/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(leaflet)
+library(tidyverse)
+```
+
+Get the data
+```{r load_data}
+df <- read.csv("https://query.data.world/s/cmknwf4nw4d74ya3cynbiisfiuyq5t", 
+               header=TRUE, stringsAsFactors=FALSE);
+
+head(df)
+```
+
+Clean data
+```{r}
+df$lat <- df$LATITUDE
+df$lng <- df$LONGITUD
+```
+
+
+
+
+My first map
+```{r}
+df_markers <- select(df, lat, lng) 
+df_markers <- head(df_markers, 1000)
+
+df_markers %>%
+    leaflet() %>%
+    addTiles() %>%
+    addMarkers(clusterOptions = markerClusterOptions())
+
+```
+
