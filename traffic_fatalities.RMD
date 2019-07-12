@@ -33,10 +33,20 @@ df <- read.csv("fatal.csv", header = TRUE, stringsAsFactors=FALSE)
 ```
 
 ```{r clean_data}
+# add cols
 df_markers <- df
 df_markers$lat <- df_markers$LATITUDE
 df_markers$lng <- df_markers$LONGITUD
-df_markers <- select(df_markers, lat, lng) 
+df_markers$Drunk_Driving <- if_else(df_markers$DRUNK_DR == 1, "Yes", "No")
+df_markers$Date <- as.Date(paste(df_markers$YEAR, df_markers$MONTH, df_markers$DAY, sep = "-"))
+
+# create a label
+df_markers$labels <- paste(sep <- "<br/>",
+                          as.character(df_markers$Date),
+                          paste0("Drunk Driving: ", df_markers$Drunk_Driving))
+
+# select data
+df_markers <- select(df_markers, lat, lng, Date, Drunk_Driving, labels) 
 df_markers <- head(df_markers, 10)
 ```
 
@@ -46,5 +56,6 @@ This project creates an interactive map to visualise where accidents are occurin
 df_markers %>%
     leaflet() %>%
     addTiles() %>%
-    addMarkers(clusterOptions = markerClusterOptions())
+    addMarkers(clusterOptions = markerClusterOptions(),
+               label = ~labels)
 ```
