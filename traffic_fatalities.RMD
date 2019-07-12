@@ -40,7 +40,7 @@ df_markers <- select(df_markers, lat, lng)
 df_markers <- head(df_markers, 10)
 ```
 
-This page creates an interactive map to visualise where accidents are occuring.
+This project creates an interactive map to visualise where accidents are occuring. Source code can be found on [github](https://github.com/SamEdwardes/Leaflet_Demo). The rendered version of this html file can be viewed on [github pages](https://samedwardes.github.io/Leaflet_Demo/traffic_fatalities).
 
 ```{r create_map, echo=TRUE}
 df_markers %>%
