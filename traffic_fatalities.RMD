@@ -23,6 +23,11 @@ From data.world:
 
 > The Department of Transportation has released the raw data for all of the fatalities that have occurred on America's roads. In an attempt to stem the continual increase of these tragic incidents, the government is asking anyone with a passion for data to dig in and see what kinds of conclusions are hidden beneath the surface.
 
+
+This project creates an interactive map to visualize where **drunk driving** accidents occurred in 2015. There were **9,109** drunk driving accidents resulting in **9,536** fatalities.
+
+Source code can be found on [github](https://github.com/SamEdwardes/Leaflet_Demo). The rendered version of this html file can be viewed on [github pages](https://samedwardes.github.io/Leaflet_Demo/traffic_fatalities).
+
 ```{r load_data}
 # to load directly from the web
 # df <- read.csv("https://query.data.world/s/cmknwf4nw4d74ya3cynbiisfiuyq5t", header=TRUE, stringsAsFactors=FALSE)
@@ -41,21 +46,26 @@ df_markers$Drunk_Driving <- if_else(df_markers$DRUNK_DR == 1, "Yes", "No")
 df_markers$Date <- as.Date(paste(df_markers$YEAR, df_markers$MONTH, df_markers$DAY, sep = "-"))
 
 # create a label
-df_markers$labels <- paste(sep <- "<br/>",
-                          as.character(df_markers$Date),
-                          paste0("Drunk Driving: ", df_markers$Drunk_Driving))
+df_markers$labels <- paste0(paste0("<p>", "Date: ", as.character(df_markers$Date), "<p></p>"),
+                            paste0("<p>", "Number of Fatalities: ", as.character(df_markers$FATALS), "<p></p>"),
+                            paste0("<p>", "Drunk Driving: ", df_markers$Drunk_Driving, "<p></p>"))
 
 # select data
-df_markers <- select(df_markers, lat, lng, Date, Drunk_Driving, labels) 
-df_markers <- head(df_markers, 10)
+df_markers <- df_markers %>% filter(Drunk_Driving == "Yes") # keep only drunk driving
+df_markers <- select(df_markers, lat, lng, Date, labels) # keep only required cols
+# df_markers <- head(df_markers, 500)
+
+# select labels
+labs <- df_markers$labels
 ```
 
-This project creates an interactive map to visualise where accidents are occuring. Source code can be found on [github](https://github.com/SamEdwardes/Leaflet_Demo). The rendered version of this html file can be viewed on [github pages](https://samedwardes.github.io/Leaflet_Demo/traffic_fatalities).
 
-```{r create_map, echo=TRUE}
+```{r create_map, echo=TRUE, warning=FALSE, message=FALSE}
 df_markers %>%
     leaflet() %>%
     addTiles() %>%
     addMarkers(clusterOptions = markerClusterOptions(),
-               label = ~labels)
+               label = lapply(labs, htmltools::HTML)) %>%
+    # setView(39.8283459, -98.5816684, zoom = 1) %>%
+    fitBounds(-127, 50, -73, 23)
 ```
